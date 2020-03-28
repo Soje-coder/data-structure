@@ -50,8 +50,9 @@ int ListInsert(Sqlist& L, int i, ElemType e)
     L.length++;
     return 0;
 }
+//顺序表合并法一
 //已知线性表La,Lb中的数据元素按值非递减排列
-void MergeList(Sqlist& La, Sqlist& Lb, Sqlist& Lc)
+void MergeList_1(Sqlist& La, Sqlist& Lb, Sqlist& Lc)
 {
     int i = 1;
     int j = 1;
@@ -83,6 +84,27 @@ void MergeList(Sqlist& La, Sqlist& Lb, Sqlist& Lc)
         j++;
     }
 }
+//顺序表合并法二
+void MergeList_2(Sqlist& La, Sqlist& Lb, Sqlist& Lc)
+{
+    ElemType *pa = La.elem;
+    ElemType *pb = Lb.elem;
+    ElemType *pc = Lc.elem;
+    Lc.length = La.length + Lb.length;
+    ElemType *pa_last = La.elem + La.length - 1;
+    ElemType *pb_last = Lb.elem + Lb.length - 1;
+    while (pa <= pa_last && pb <= pb_last)
+    {
+        if (*pa <= *pb)
+            *pc++ = *pa++;
+        else
+            *pc++ = *pb++;
+    }
+    while (pa <= pa_last)
+        *pc++ = *pa++;
+    while (pb <= pb_last)
+        *pc++ = *pb++;
+}
 int main()
 {
     int i, j, k;
@@ -102,14 +124,21 @@ int main()
     }
     printf("\n");
     InitList(Lc);
-    MergeList(La, Lb, Lc);
-    printf("Lc:");
+    MergeList_1(La, Lb, Lc);
+    printf("method_1 Lc:");
    // printf("%d\n", Lc.length);
     for (k = 0; k < Lc.length; k++)
     {
         printf("%d ", Lc.elem[k]);
     }
     printf("\n");
-
+    MergeList_2(La, Lb, Lc);
+    printf("method_2 Lc:");
+   // printf("%d\n", Lc.length);
+    for (k = 0; k < Lc.length; k++)
+    {
+        printf("%d ", Lc.elem[k]);
+    }
+    printf("\n");
         return 0;
 }

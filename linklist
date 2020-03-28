@@ -1,0 +1,176 @@
+#include <stdio.h>
+#include<stdlib.h>
+#define ElemType int
+typedef struct LNode {
+    ElemType data;
+    struct LNode* next;
+}LNode, *LinkList;
+
+//创建空的带头结点的单链表
+void InitList(LinkList *L)//申请头结点，头指针地址改变
+{
+    *L = (LinkList)malloc(sizeof(LNode));
+    if (*L==NULL)
+    {
+        printf("分配结点失败！\n");
+    }
+    (*L)->next = NULL;  //置头结点的next域为空
+}
+//逆位序输入n个元素的值，建立带表头结点的单链表
+void CreateList_L(LinkList* L, int n)
+{
+    InitList(L);
+    int i;
+    for (i = 0; i < n; i++)
+    {
+        LinkList p = (LinkList)malloc(sizeof(LNode));
+        if (!p)
+            printf("分配存储失败！\n");
+        printf("请输入要插入的元素：\n");
+        scanf("%d", &(p->data));
+        p->next = (*L)->next;
+        (*L)->next = p;
+    }
+}
+//销毁单链表
+void DestroyList(LinkList* L)//需释放头结点，头指针地址改变
+{
+    LinkList p;
+    while (*L)
+    {
+        p = (*L)->next;
+        free(*L);
+        *L = p;
+    } 
+}
+//将单链表置为空表
+void ClearList(LinkList *L) //保留头结点，头指针地址不变
+{
+    LinkList p = (*L)->next;
+    (*L)->next = NULL;
+    DestroyList(&p);
+}
+//返回单链表中第i个元素e
+int GetElem_L(LinkList* L, int i, ElemType* e)
+{
+    LinkList p = (*L)->next;
+    int j = 1; //初始化，p指向第一个结点，j为计数器
+    while (p && j < i)
+    {
+        p = p->next;
+        ++j;
+    }//顺时针向后查找，直到p指向第i个元素或p为空
+    if (!p || j > i)
+        return -1;
+   *e = p->data;
+    return 0;
+}
+//在带头结点的单链表中第i个位置之前插入元素e
+int ListInsert_L(LinkList *L, int i, ElemType e) //插入不改变头指针的值
+{
+    LinkList p = *L;
+    int j = 1;
+    while (p && j < i)
+    {
+        p = p->next;
+        ++j;
+    }
+    if (!p || j > i)
+        return -1;
+    LinkList s = (LinkList)malloc(sizeof(LNode));
+    s->data = e;
+    s->next = p->next;
+    p->next = s;
+    return 0;
+}
+//在带头结点的单链表中删除第i个元素，并由e返回其值
+int ListDelete_L(LinkList*L, int i, ElemType* e) //删除操作也不改变头指针的值
+{
+    LinkList p =*L;
+    int j = 1;
+    while (p->next && j < i)
+    {
+        p = p->next;
+        ++j;
+    }
+    if (!(p->next) || j > i)
+        return -1;
+    LinkList q = p->next;
+    p->next = q->next;
+    *e = q->data;
+    free(q);
+    return 0;
+}
+
+//归并两非递减单链表La和Lb得到新链表Lc，且Lc也按非递减排列
+//在归并两个链表为一个链表时，不需要另建新表的结点空间，而只需将原来两个链表中结点之间的关系解除，重新建立关系
+void MergeList_L(LinkList *La, LinkList *Lb, LinkList *Lc)
+{
+    LinkList pa = (*La)->next; //pa指向La的第一个元素 
+    LinkList pb = (*Lb)->next; //pb指向Lb的第一个元素 
+    LinkList pc = *La;         //La的头结点作为Lc的头结点 
+    *Lc = pc;
+    while (pa && pb)
+    {
+        if (pa->data <= pb->data)
+        {
+            pc->next = pa;
+            pc = pa;
+            pa = pa->next;
+        }
+        else
+        {
+            pc->next = pb;
+            pc = pb;
+            pb = pb->next;
+        }
+    }
+    pc->next = pa ? pa : pb;
+}
+//打印单链表
+void Print_LinkList(LinkList* L)
+{
+    LinkList p = (*L)->next;
+    while (p)
+    {
+        printf("%d ", p->data);
+        p = p->next;
+    }
+    printf("\n");
+}
+int main()
+{
+    LinkList La, Lb, Lc;
+    ElemType e;
+    ElemType insert;
+    ElemType del;
+    int pos1;
+    int pos2;
+    int pos3;
+    int La_n = 5;
+    int Lb_n = 3;
+    CreateList_L(&La, La_n);
+    CreateList_L(&Lb, Lb_n);
+    printf("La:\n");
+    Print_LinkList(&La);
+    printf("Lb:\n");
+    Print_LinkList(&Lb);
+    printf("请输入你想查找单链表La中元素的位置：\n");
+    scanf("%d", &pos1);
+    GetElem_L(&La, pos1, &e);
+    printf("La中第%d的元素是：%d\n", pos1, e);
+    printf("请输入你要插入Lb中的元素和位置：\n");
+    scanf("%d%d", &insert, &pos2);
+    ListInsert_L(&Lb, pos2, insert);
+    printf("插入后的Lb:\n");
+    Print_LinkList(&Lb);
+    printf("请输入你要删除Lb中元素的位置：\n");
+    scanf("%d", &pos3);
+    ListDelete_L(&Lb, pos3, &del);
+    printf("删除后的Lb:\n");
+    Print_LinkList(&Lb);
+    MergeList_L(&La, &Lb, &Lc);
+    printf("将La和Lb合并到Lc中后得到的单链表为：\n");
+    Print_LinkList(&Lc);
+    return 0;
+}

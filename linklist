@@ -17,20 +17,39 @@ void InitList(LinkList *L)//申请头结点，头指针地址改变
     (*L)->next = NULL;  //置头结点的next域为空
 }
 //逆位序输入n个元素的值，建立带表头结点的单链表
-void CreateList_L(LinkList* L, int n)
+//法一：头插法 
+void CreateList_L_1(LinkList* L, int n)
 {
     InitList(L);
     int i;
+    printf("请逆序输入要插入的元素：\n");
     for (i = 0; i < n; i++)
     {
         LinkList p = (LinkList)malloc(sizeof(LNode));
         if (!p)
             printf("分配存储失败！\n");
-        printf("请输入要插入的元素：\n");
         scanf("%d", &(p->data));
         p->next = (*L)->next;
         (*L)->next = p;
     }
+}
+//法二：尾插法
+void  CreateList_L_2(LinkList* L, int n)
+{
+	int i;
+	(*L) = (LinkList)malloc(sizeof(LNode));
+	LinkList p, r=*L; //r为表尾指针 
+	printf("请顺序输入要插入的元素：\n");
+	for(i = 0; i < n; i++)
+	{
+		p = (LinkList)malloc(sizeof(LNode));
+		if (!p)
+            printf("分配存储失败！\n");
+        scanf("%d", &(p->data));
+        r->next = p;
+        r = p; //r指向新的表尾结点 
+	}
+	r->next = NULL; //尾结点指针置空 
 }
 //销毁单链表
 void DestroyList(LinkList* L)//需释放头结点，头指针地址改变
@@ -149,8 +168,8 @@ int main()
     int pos3;
     int La_n = 5;
     int Lb_n = 3;
-    CreateList_L(&La, La_n);
-    CreateList_L(&Lb, Lb_n);
+    CreateList_L_1(&La, La_n);
+    CreateList_L_2(&Lb, Lb_n);
     printf("La:\n");
     Print_LinkList(&La);
     printf("Lb:\n");

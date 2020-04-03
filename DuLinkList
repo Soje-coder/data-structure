@@ -1,0 +1,118 @@
+#include<stdio.h>
+#include<stdlib.h>
+#define ElemType int
+typedef struct DuLNode
+{
+	ElemType data;
+	struct DuLNode *prior;   //前驱指针 
+	struct DuLNode *next;    //后继指针 
+}DuLNode, *DuLinkList;  //头指针 
+
+//创建一个空的双向链表(头结点) 
+void InitDuLinkList(DuLinkList *L)
+{
+	*L = (DuLinkList)malloc(sizeof(DuLNode));
+	if(*L == NULL)
+	{
+		printf("分配内存失败！\n");
+	}
+	(*L)->prior = NULL;
+	(*L)->next = NULL;
+}
+//创建含n个元素的双向单链表
+void ListCreate_DuL(DuLinkList *L, int n)
+{
+	int i;
+	InitDuLinkList(L);
+	DuLinkList list = *L;//当前结点指针 
+	printf("请输入双向链表元素：\n");
+	for(i = 1; i <= n; i++)
+	{
+	    DuLinkList p = (DuLinkList)malloc(sizeof(DuLNode));
+		//InitDuLinkList(&p);//新结点 
+		scanf("%d",&(p->data));
+
+		list->next = p;
+		p->prior = list;
+		list = list->next; 
+		p->next = NULL;
+	}
+	
+}
+
+//向带头结点的双向链表中第i个位置插入元素e
+void ListInsert_DuL(DuLinkList *L, int i, ElemType e)
+{
+	int j;
+	DuLinkList p = *L;  //p指向要插入的位置的元素 
+	for(j = 0; j < i; j++)
+	{
+		p = p->next;
+	}    
+	if(!p)
+		printf("插入的位置不合理！\n");
+	DuLinkList s = (DuLinkList)malloc(sizeof(DuLNode));
+	if(!s)
+	printf("分配内存失败！\n");
+	s->data = e;
+	s->prior = p->prior;
+	p->prior->next = s;
+	s->next = p;
+	p->prior = s;
+} 
+
+//删除带头结点的双向链表中第i个元素，并用e返回删除的元素值 
+void ListDelete_DuL(DuLinkList *L, int i, ElemType &e)
+{
+    int j;
+	DuLinkList p = *L;   //p指向要删除的位置的元素
+	for(j = 0; j < i; j++)
+	{
+		p = p->next;
+	}
+	if(!p)
+		printf("删除的位置不合理！\n");
+	e = p->data;
+	p->prior->next = p->next;
+	p->next->prior = p->prior;
+	free(p);
+}
+
+//打印双向链表
+void Print_LinkList(DuLinkList* L)
+{
+    DuLinkList p = (*L)->next;
+    while (p)
+    {
+        printf("%d ", p->data);
+        p =p->next;
+    }
+    printf("\n");
+}
+
+int main()
+{
+	int ins;
+	int del;
+	ElemType e2;
+	ElemType e1;
+	DuLinkList L;
+	ListCreate_DuL(&L,5);
+	printf("链表为：\n");
+	Print_LinkList(&L);
+	
+	printf("请输入要插到链表中的元素和位置：\n");
+	scanf("%d%d", &e1, &ins);
+	ListInsert_DuL(&L, ins, e1);
+	printf("插入后的链表为：\n");
+	Print_LinkList(&L); 
+	
+	printf("请输入要删除链表中元素的位置：\n");
+	scanf("%d", &del);
+	ListDelete_DuL(&L, del, e2);
+	printf("删除后的链表为：\n");
+	Print_LinkList(&L); 
+	printf("删除的元素是：\n");
+	printf("%d\n", e2);
+	return 0;
+}
